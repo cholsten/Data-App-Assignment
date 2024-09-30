@@ -9,6 +9,52 @@ st.write("### Input Data and Examples")
 df = pd.read_csv("Superstore_Sales_utf8.csv", parse_dates=True)
 st.dataframe(df)
 
+# Dropdown for selecting category
+categories = df['Category'].unique()
+selected_category = st.selectbox("Select a Category:", categories)
+
+# Filter the dataframe based on the selected category
+filtered_df = df[df['Category'] == selected_category]
+
+# Multi-select for Sub_Category in the selected Category
+sub_categories = filtered_df['Sub-Category'].unique()
+selected_sub_categories = st.multiselect("Select Sub-Category(es):", sub_categories)
+
+# Further filter the dataframe based on selected subcategories
+if selected_sub_categories:
+    filtered_df = filtered_df[filtered_df['Sub-Category'].isin(selected_sub_categories)]
+
+# Display the filtered dataframe
+st.dataframe(filtered_df)
+
+# Calculate metrics for the selected items
+total_sales = filtered_df['Sales'].sum()
+total_profit = filtered_df['Profit'].sum()
+overall_profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
+
+# Show metrics
+st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+st.metric(label="Overall Profit Margin", value=f"{overall_profit_margin:.2f}%")
+
+# Calculate overall average profit margin across all products
+overall_total_sales = df['Sales'].sum()
+overall_total_profit = df['Profit'].sum()
+overall_average_profit_margin = (overall_total_profit / overall_total_sales * 100) if overall_total_sales > 0 else 0
+
+# Show metrics
+st.metric(label="Total Sales", value=f"${total_sales:,.2f}")
+st.metric(label="Total Profit", value=f"${total_profit:,.2f}")
+st.metric(
+    label="Overall Profit Margin",
+    value=f"{overall_profit_margin:.2f}%",
+    delta=f"{overall_profit_margin - overall_average_profit_margin:.2f}%",
+    delta_color="inverse" if overall_profit_margin < overall_average_profit_margin else "normal"
+)
+
+# Bar chart with sales for selected subcategories
+st.bar_chart(filtered_df.groupby('Sub-Category', as_index=False).sum(), x='Sub-Category', y='Sales', color="#04f")
+
 # This bar chart will not have solid bars--but lines--because the detail data is being graphed independently
 st.bar_chart(df, x="Category", y="Sales")
 
@@ -25,6 +71,14 @@ df.set_index('Order_Date', inplace=True)
 sales_by_month = df.filter(items=['Sales']).groupby(pd.Grouper(freq='M')).sum()
 
 st.dataframe(sales_by_month)
+
+# Line chart for monthly sales
+st.line_chart(sales_by_month, y="Sales")
+
+# Additional: Line chart of daily sales for the selected items
+if selected_sub_categories:
+    daily_sales = filtered_df.groupby(filtered_df.index).sum()
+    st.line_chart(daily_sales['Sales'], use_container_width=True)
 
 # Here the grouped months are the index and automatically used for the x axis
 st.line_chart(sales_by_month, y="Sales")
