@@ -53,7 +53,7 @@ st.metric(
 )
 
 # Bar chart with sales for selected subcategories
-st.bar_chart(filtered_df.groupby('Sub_Category', as_index=False).sum(), x='Sub-Category', y='Sales', color="#04f")
+st.bar_chart(filtered_df.groupby('Sub_Category', as_index=False).sum(), x='Sub_Category', y='Sales', color="#04f")
 
 # This bar chart will not have solid bars--but lines--because the detail data is being graphed independently
 st.bar_chart(df, x="Category", y="Sales")
