@@ -17,12 +17,12 @@ selected_category = st.selectbox("Select a Category:", categories)
 filtered_df = df[df['Category'] == selected_category]
 
 # Multi-select for Sub_Category in the selected Category
-sub_categories = filtered_df['Sub-Category'].unique()
-selected_sub_categories = st.multiselect("Select Sub-Category(es):", sub_categories)
+sub_categories = filtered_df['Sub_Category'].unique()
+selected_sub_categories = st.multiselect("Select Sub_Category(es):", sub_categories)
 
 # Further filter the dataframe based on selected subcategories
 if selected_sub_categories:
-    filtered_df = filtered_df[filtered_df['Sub-Category'].isin(selected_sub_categories)]
+    filtered_df = filtered_df[filtered_df['Sub_Category'].isin(selected_sub_categories)]
 
 # Display the filtered dataframe
 st.dataframe(filtered_df)
@@ -53,7 +53,7 @@ st.metric(
 )
 
 # Bar chart with sales for selected subcategories
-st.bar_chart(filtered_df.groupby('Sub-Category', as_index=False).sum(), x='Sub-Category', y='Sales', color="#04f")
+st.bar_chart(filtered_df.groupby('Sub_Category', as_index=False).sum(), x='Sub-Category', y='Sales', color="#04f")
 
 # This bar chart will not have solid bars--but lines--because the detail data is being graphed independently
 st.bar_chart(df, x="Category", y="Sales")
